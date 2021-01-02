@@ -1,6 +1,7 @@
 const { addToXMP } = require("./xmp.js");
 const fs = require("fs/promises");
 const constants = require("./constants/constants.js");
+const { signature } = require("./constants/constants.js");
 
 /**
  *
@@ -60,7 +61,15 @@ const writeFile = async (file) => {
   await fs.writeFile(`./temp/${file.name}`, file.data);
 };
 
+const isPSD = (file) => {
+  return (
+    file.name.toLowerCase().endsWith(".psd") &&
+    findByteSequence(file, [...signature, 0, 1, 0, 0, 0, 0, 0, 0], 12) !== -1
+  );
+};
+
 module.exports = {
   findByteSequence,
   addXMP,
+  isPSD,
 };
