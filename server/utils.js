@@ -2,7 +2,7 @@ const { addToXMP } = require("./xmp.js");
 const fs = require("fs/promises");
 const constants = require("./constants/constants.js");
 const { signature } = require("./constants/constants.js");
-
+const axios = require("axios");
 /**
  *
  * @param data[] - ByteArray representation of file
@@ -61,6 +61,91 @@ const writeFile = async (file) => {
   await fs.writeFile(`./temp/${file.name}`, file.data);
 };
 
+const getRootFolderId = async (access_token) => {
+  const result = await axios.get("https://www.googleapis.com/drive/v3/files", {
+    params: {
+      q:
+        "mimeType = 'application/vnd.google-apps.folder' and name = 'rights' and trashed = false",
+      access_token,
+    },
+  });
+  if (result.data.files.length === 0) {
+    return await createRootFolderDrive(access_token);
+  }
+  return result.data.files[0].id;
+};
+
+const createRootFolderDrive = async (
+  access_token
+) => {
+  const response = await axios.post(
+    "https://www.googleapis.com/drive/v3/files",
+    { mimeType: "application/vnd.google-apps.folder", name: "rights" },
+    {
+      params: {
+        access_token,
+      },
+    }
+  );
+  return response.data.id;
+};
+
+const createFolderDrive = async (folderName, rootId, access_token) => {
+  const response = await axios.post(
+    "https://www.googleapis.com/drive/v3/files",
+    {
+      mimeType: "application/vnd.google-apps.folder",
+      name: folderName,
+      parents: [rootId],
+    },
+    {
+      params: {
+        access_token,
+      },
+    }
+  );
+  return response.data.id;
+};
+
+const uploadFile = async (folderId, fileName, access_token) => {
+  const metaData = {
+    name: fileName,
+    parents: [folderId],
+  };
+  const data = await fs.readFile(`./temp/${fileName}`);
+  const boundary = "xxxxxxxxxx";
+  let body = "--" + boundary + "\r\n";
+  body += 'Content-Disposition: form-data; name="metadata"\r\n';
+  body += "Content-Type: application/json; charset=UTF-8\r\n\r\n";
+  body += JSON.stringify(metaData) + "\r\n";
+  body += "--" + boundary + "\r\n";
+  body += 'Content-Disposition: form-data; name="file"\r\n\r\n';
+  const payload = Buffer.concat([
+    Buffer.from(body, "utf8"),
+    Buffer.from(data),
+    Buffer.from("\r\n--" + boundary + "--\r\n", "utf8"),
+  ]);
+  await axios.post(
+    "https://www.googleapis.com/upload/drive/v3/files",
+    payload,
+    {
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      params: { access_token, uploadType: "multipart" },
+      headers: {
+        "Content-Type": "multipart/form-data; boundary=" + boundary,
+      },
+    }
+  );
+};
+
+const uploadToDrive = async (folderName, fileName, access_token) => {
+  const rootId = await getRootFolderId(access_token);
+  const buyerFolder = await createFolderDrive(folderName, rootId, access_token);
+  await uploadFile(buyerFolder, fileName, access_token);
+  return buyerFolder;
+};
+
 const isPSD = (file) => {
   return (
     file.name.toLowerCase().endsWith(".psd") &&
@@ -72,4 +157,5 @@ module.exports = {
   findByteSequence,
   addXMP,
   isPSD,
+  uploadToDrive,
 };
