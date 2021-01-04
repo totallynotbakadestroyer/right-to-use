@@ -1,16 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const { addXMP, isPSD } = require("../utils.js");
+const fileServices = require("../services/fileServices");
 
 router.post("/", async (req, res) => {
   const { file } = req.files;
-  if (!isPSD(file)) {
-    return res.status(400).json({
-      error: "Provided file is not a .PDF",
-    });
+  const { accessToken, folderName } = req.body;
+  const metadata = JSON.parse(req.body.metadata);
+  await fileServices.putXMP(file, metadata);
+  if (accessToken && folderName) {
+    const createdData = await fileServices.uploadToDrive(
+      folderName,
+      file.name,
+      accessToken
+    );
+    return res.json(createdData);
   }
-  await addXMP(file, JSON.parse(req.body.metadata));
-  res.end();
+  return res.download(decodeURIComponent(`./temp/${file.name}`));
 });
 
 module.exports = router;

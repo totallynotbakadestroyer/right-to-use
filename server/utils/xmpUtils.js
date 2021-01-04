@@ -1,4 +1,4 @@
-const { XMPResourceDefault } = require("./constants/constants.js");
+const { XMPResourceDefault } = require("../constants/constants.js");
 const DOMParser = require("xmldom").DOMParser;
 const parser = new DOMParser();
 const XMLSerializer = require("xmldom").XMLSerializer;
@@ -26,6 +26,7 @@ const generateLines = () => {
 
 const addFields = (xml, fields) => {
   const xmp = parser.parseFromString(xml, "text/xml").documentElement;
+  console.log(xml)
   let descriptionTag = xmp.getElementsByTagName("rdf:Description")[0];
   if (!descriptionTag) {
     const description = xmp.createElement("rdf:Description");
@@ -34,6 +35,7 @@ const addFields = (xml, fields) => {
   }
   const currentTime = new Date().toISOString();
   for (const field of fields) {
+    console.log(field);
     descriptionTag.setAttribute(field.name, field.data);
   }
   descriptionTag.setAttribute("xmp:ModifyDate", currentTime);
@@ -46,7 +48,6 @@ const addFields = (xml, fields) => {
 };
 
 const xmpToImageResource = (xmp) => {
-  console.log(xmp)
   let XMPBuffer = Buffer.from(new TextEncoder().encode(xmp));
   const XMPResourceSignatureBuffer = Buffer.from(XMPResourceDefault);
   const XMPLength = XMPBuffer.length;

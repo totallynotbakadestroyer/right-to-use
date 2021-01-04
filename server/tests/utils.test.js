@@ -1,4 +1,4 @@
-const { findByteSequence } = require("../utils");
+const { findByteSequence } = require("../utils/fileUtils");
 const { testFile } = require("./testHelper");
 
 describe("findByteSequence", () => {
