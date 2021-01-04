@@ -7,8 +7,14 @@ const indexRouter = require("./routes/index");
 const uploadRouter = require("./routes/upload.js");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
+const cleanTemp = require("./jobs/cleanTemp");
 
+const cron = require("node-cron");
 const app = express();
+
+cron.schedule("* * * * *", () => {
+  cleanTemp();
+})
 
 app.use(fileUpload({ limits: { fileSize: 150 * 1024 * 1024 } }));
 
