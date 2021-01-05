@@ -4,10 +4,11 @@ const fileServices = require("../services/fileServices");
 
 router.post("/", async (req, res) => {
   const { file } = req.files;
-  const { accessToken, folderName } = req.body;
-  const metadata = JSON.parse(req.body.metadata);
+  const { metadata, folderName, upload, accessToken } = JSON.parse(
+    req.body.payload
+  );
   await fileServices.putXMP(file, metadata);
-  if (accessToken && folderName) {
+  if (upload) {
     const createdData = await fileServices.uploadToDrive(
       folderName,
       file.name,
