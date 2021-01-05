@@ -2,6 +2,7 @@ import "./App.css";
 import React, { useState } from "react";
 import { GoogleLogin } from "react-google-login";
 import axios from "axios";
+import fileSaver from "file-saver";
 
 const App = () => {
   const [file, setFile] = useState(null);
@@ -10,18 +11,28 @@ const App = () => {
   ]);
   const [auth, setAuth] = useState("");
   const [upload, setUpload] = useState(false);
+  const [folderName, setFolderName] = useState("");
   const responseGoogle = (response) => {
     console.log(response);
-    setAuth(response);
+    setAuth(response.accessToken);
   };
   const createFile = async (event) => {
     event.preventDefault();
     const data = new FormData();
     data.append("file", file);
+    if (upload && auth) {
+      data.append("accessToken", auth);
+      data.append("folderName", folderName);
+    }
     data.append("metadata", JSON.stringify(metadataFields));
-    console.log(file.name)
+    console.log(file.name);
+    if (!upload) {
+      const response = await axios.post("http://localhost:3001/upload", data, {
+        responseType: "blob",
+      });
+      return fileSaver(response.data, file.name);
+    }
     await axios.post("http://localhost:3001/upload", data);
-    window.open(`http://localhost:3001/upload?name=${file.name}`)
   };
 
   const addField = (event) => {
@@ -85,6 +96,17 @@ const App = () => {
             );
           })}
         </div>
+        {upload ? (
+          <div>
+            <label htmlFor={"folder-name"}>
+              Folder name
+              <input
+                id={"folder-name"}
+                onChange={({ target }) => setFolderName(target.value)}
+              />
+            </label>
+          </div>
+        ) : null}
         <button onClick={addField}>Add field</button>
         <div>
           <label htmlFor={"upload-drive"}>
@@ -103,7 +125,7 @@ const App = () => {
             clientId="806749174719-9lf5h2pm0c5jr9hj5dn9hbs5a80bgvtp.apps.googleusercontent.com"
             buttonText="Login"
             onSuccess={responseGoogle}
-            scope={"https://www.googleapis.com/auth/drive.file"}
+            scope={"https://www.googleapis.com/auth/drive.appdata"}
           />
         )}
       </form>
