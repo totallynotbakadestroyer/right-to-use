@@ -19,6 +19,7 @@ router.post("/", async (req, res) => {
     }
     return res.download(decodeURIComponent(`./temp/${file.name}`));
   } catch (e) {
+    console.log(e);
     return res.status(400).json({ error: e.message });
   }
 });
