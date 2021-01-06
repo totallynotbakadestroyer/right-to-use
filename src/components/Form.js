@@ -89,7 +89,7 @@ const Form = ({ setAuth, auth }) => {
         <button type={"submit"}>mark picture</button>
       ) : (
         <GoogleLogin
-          clientId="806749174719-9lf5h2pm0c5jr9hj5dn9hbs5a80bgvtp.apps.googleusercontent.com"
+          clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
           buttonText="Login"
           onSuccess={(response) => setAuth(response)}
           scope={"https://www.googleapis.com/auth/drive.appdata"}
