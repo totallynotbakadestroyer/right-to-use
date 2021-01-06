@@ -78,6 +78,22 @@ const isPSD = (file) => {
   );
 };
 
+const parseMetadata = (metadata) => {
+  const parsedMetadata = [];
+  for (const field of metadata) {
+    if (field.name === "") {
+      throw new Error("Fields cannot be empty!");
+    }
+    if (field.name.startsWith("xmp:")) {
+      parsedMetadata.push(field);
+      continue;
+    }
+    field.name = "xmp:" + field.name;
+    parsedMetadata.push(field);
+  }
+  return parsedMetadata;
+};
+
 module.exports = {
   findByteSequence,
   isPSD,
@@ -85,4 +101,5 @@ module.exports = {
   writeFile,
   createXMP,
   updateXMP,
+  parseMetadata,
 };

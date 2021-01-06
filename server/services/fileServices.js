@@ -1,3 +1,4 @@
+const { parseMetadata } = require("../utils/fileUtils.js");
 const {
   getResourceSection,
   createXMP,
@@ -19,14 +20,20 @@ const uploadToDrive = async (folderName, fileName, access_token) => {
 };
 
 const putXMP = async (file, fields) => {
-  const resourceSection = getResourceSection(file);
-  let updatedFile;
-  if (resourceSection.XMPIndex === -1) {
-    updatedFile = createXMP(resourceSection, file, fields);
-  } else {
-    updatedFile = updateXMP(resourceSection, file, fields);
+  try {
+    const parsedMetadata = parseMetadata(fields);
+    const resourceSection = getResourceSection(file);
+    let updatedFile;
+    if (resourceSection.XMPIndex === -1) {
+      updatedFile = createXMP(resourceSection, file, parsedMetadata);
+    } else {
+      updatedFile = updateXMP(resourceSection, file, parsedMetadata);
+    }
+    await writeFile(updatedFile);
+  } catch (e) {
+    console.error(e.message)
+    throw e;
   }
-  await writeFile(updatedFile);
 };
 
 module.exports = {
