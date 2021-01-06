@@ -92,7 +92,7 @@ const Form = ({ setAuth, auth }) => {
           clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
           buttonText="Login"
           onSuccess={(response) => setAuth(response)}
-          scope={"https://www.googleapis.com/auth/drive.appdata"}
+          scope={"https://www.googleapis.com/auth/drive.file"}
         />
       )}
     </form>
