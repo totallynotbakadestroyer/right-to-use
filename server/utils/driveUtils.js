@@ -1,5 +1,5 @@
 const axios = require("axios");
-const fs = require("fs/promises");
+const fs = require("fs").promises;
 const apiFiles = "https://www.googleapis.com/drive/v3/files";
 const apiFilesUpload = "https://www.googleapis.com/upload/drive/v3/files";
 

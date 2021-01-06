@@ -1,4 +1,4 @@
-const fs = require("fs/promises");
+const fs = require("fs").promises;
 const constants = require("../constants/constants.js");
 const { addToXMP } = require("./xmpUtils.js");
 
