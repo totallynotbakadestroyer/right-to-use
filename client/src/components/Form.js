@@ -1,6 +1,6 @@
 import { GoogleLogin } from "react-google-login";
 import React, { createRef, useState } from "react";
-import MetadataFields from "./MetadataFields";
+import MetadataFields from "./MetadataFields.js";
 import uploadFile from "../services/fileService.js";
 
 const Form = ({ setAuth, auth }) => {
