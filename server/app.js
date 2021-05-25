@@ -3,6 +3,9 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
+const SSE = require("express-sse");
+const sse = new SSE([]);
+
 const indexRouter = require("./routes/index");
 const uploadRouter = require("./routes/upload.js");
 const cors = require("cors");
@@ -14,7 +17,7 @@ const app = express();
 
 cron.schedule("* * * * *", () => {
   cleanTemp();
-})
+});
 
 app.use(fileUpload({ limits: { fileSize: 150 * 1024 * 1024 } }));
 
@@ -26,6 +29,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
 app.use("/", indexRouter);
-app.use("/upload", uploadRouter);
+app.get("/events", sse.init);
+app.use("/upload", uploadRouter(sse));
 
 module.exports = app;
