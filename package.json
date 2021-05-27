@@ -12,13 +12,15 @@
   ],
   "scripts": {
     "start": "node dist/main.js",
-    "build": "npm run build --prefix server && npm run build --prefix client",
+    "build": "npm run build --prefix client",
+    "prebuild": "rimraf ./server/public",
     "server:dev": "npm run dev --prefix server",
     "server": "npm run start --prefix server",
     "client": "npm run serve --prefix client",
     "dev": "concurrently \"npm run server:dev\" \"npm run client\""
   },
   "dependencies": {
-    "concurrently": "^6.2.0"
+    "concurrently": "^6.2.0",
+    "rimraf": "^3.0.2"
   }
 }
