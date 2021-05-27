@@ -15,7 +15,10 @@
     "build": "npm run build --prefix server && npm run build --prefix client",
     "server:dev": "npm run dev --prefix server",
     "server": "npm run start --prefix server",
-    "client": "npm run start --prefix client",
+    "client": "npm run serve --prefix client",
     "dev": "concurrently \"npm run server:dev\" \"npm run client\""
+  },
+  "dependencies": {
+    "concurrently": "^6.2.0"
   }
 }
