@@ -26,7 +26,6 @@ const generateLines = () => {
 
 const addFields = (xml, fields) => {
   const xmp = parser.parseFromString(xml, "text/xml").documentElement;
-  console.log(xml)
   let descriptionTag = xmp.getElementsByTagName("rdf:Description")[0];
   if (!descriptionTag) {
     const description = xmp.createElement("rdf:Description");
@@ -35,7 +34,6 @@ const addFields = (xml, fields) => {
   }
   const currentTime = new Date().toISOString();
   for (const field of fields) {
-    console.log(field);
     descriptionTag.setAttribute(field.name, field.data);
   }
   descriptionTag.setAttribute("xmp:ModifyDate", currentTime);
@@ -64,7 +62,6 @@ const xmpToImageResource = (xmp) => {
 
 const addToXMP = (fields, originalXMP = XMP_TEMPLATE) => {
   const XMP = addFields(originalXMP, fields);
-  console.log(XMP)
   const { XMPResourceBuffer, length } = xmpToImageResource(XMP);
   return { XMPResourceBuffer, length };
 };

@@ -7,7 +7,6 @@ module.exports = (sse) => {
     try {
       await sse.send('Processing file...', 'statusUpdate')
       const { file } = req.files;
-      console.log(req.body);
       const { metadata, folderName, upload, accessToken } = JSON.parse(
         req.body.payload
       );
@@ -24,7 +23,6 @@ module.exports = (sse) => {
       }
       return res.download(decodeURIComponent(`./temp/${file.name}`));
     } catch (e) {
-      console.log(e);
       return res.status(400).json({ error: e.message });
     }
   });

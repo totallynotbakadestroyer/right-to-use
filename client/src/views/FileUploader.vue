@@ -1,59 +1,24 @@
 <template>
-  <v-container class="fill-height">
-    <v-card class="my-auto mx-auto" rounded>
+  <v-container class="fill-height d-flex align-content-center">
+    <v-card
+      class="my-auto mx-auto"
+      :width="$vuetify.breakpoint.smAndDown ? '100%' : '70vw'"
+      rounded
+    >
       <v-card-text>
-        <v-sheet height="80vh" max-height="80vh" class="fill-height">
+        <v-sheet>
           <v-row>
             <v-col cols="12">
-              <v-sheet>
-                <div class="display-1">File</div>
-                <div class="subtitle-1">
-                  Upload file using button or just drop it right here.
-                </div>
-                <div class="d-flex align-center">
-                  <v-file-input
-                    v-model="file"
-                    accept=".psd"
-                    ref="fileInput"
-                    class="mr-2"
-                    prepend-icon=""
-                    label="PSD Document"
-                  />
-                  <v-btn @click="$refs.fileInput.$refs.input.click()"
-                    >select file</v-btn
-                  >
-                </div>
-              </v-sheet>
+              <upload-box :file.sync="file" />
             </v-col>
             <v-col cols="12">
-              <v-sheet>
-                <div class="mb-4">
-                  <div class="display-1 text-left">Metadata fields</div>
-                  <div class="subtitle-1 text-left">
-                    Keep in mind, field names must be CamelCase with no special
-                    symbols.
-                  </div>
-                </div>
-                <!--directly mutating the original is a bad manner, but i just trying to keep things simple -->
-                <metadata-fields :fields.sync="fields" />
-              </v-sheet>
+              <MetadataBox :fields.sync="fields" />
             </v-col>
           </v-row>
         </v-sheet>
-        <v-row>
-          <v-col :cols="useGoogle ? 6 : 12">
-            <v-checkbox
-              dense
-              v-model="useGoogle"
-              persistent-hint
-              hint="Check this, so edited PSD will be uploaded directly to your Google Drive. Pretty neat stuff, i must say"
-              label="Upload to Google Drive?"
-            />
-          </v-col>
-          <v-col v-if="useGoogle" cols="6">
-            <v-text-field label="Upload folder name" v-model="folderName" />
-          </v-col>
-        </v-row>
+        <div class="pt-2">
+            <UseGoogleBox :use-google.sync="useGoogle" :folder-name.sync="folderName" />
+        </div>
       </v-card-text>
       <v-card-actions class="mt-2">
         <v-col class="text-right">
@@ -82,12 +47,21 @@
 <script>
 import ProgressModal from "../components/ProgressModal.vue";
 import GoogleLogin from "vue-google-login";
-import MetadataFields from "../components/MetadataFields.vue";
 import fileService from "../services/fileService.js";
-import fileSaver from 'file-saver';
+import fileSaver from "file-saver";
+import UploadBox from "../components/UploadBox.vue";
+import MetadataBox from "../components/MetadataBox";
+import UseGoogleBox from "../components/UseGoogleBox.vue";
+
 export default {
   name: "FileUploader",
-  components: { MetadataFields, ProgressModal, GoogleLogin },
+  components: {
+    UseGoogleBox,
+    UploadBox,
+    ProgressModal,
+    GoogleLogin,
+    MetadataBox,
+  },
   data() {
     return {
       fields: [
@@ -112,10 +86,10 @@ export default {
   },
   methods: {
     getResult() {
-      if(this.useGoogle) {
-        return window.open(this.result)
+      if (this.useGoogle) {
+        return window.open(this.result);
       }
-      return fileSaver.saveAs(this.result, this.file.name)
+      return fileSaver.saveAs(this.result, this.file.name);
     },
     closeDialog() {
       this.dialog = false;
@@ -133,7 +107,6 @@ export default {
         accessToken: this.accessToken,
       });
       this.isProcessingDone = true;
-      console.log(data);
       this.result = data.link ? data.link : data;
     },
   },

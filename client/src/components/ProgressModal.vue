@@ -46,7 +46,6 @@ export default {
     });
 
     sseClient.on("statusUpdate", (message) => {
-      console.log(message);
       this.status = message;
     });
 
