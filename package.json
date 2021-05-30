@@ -2,7 +2,7 @@
   "private": true,
   "name": "xmp-adder",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./server/bin/www",
   "repository": "https://github.com/totallynotbakadestroyer/right-to-use.git",
   "author": "totallynotbakadestroyer <52473158+totallynotbakadestroyer@users.noreply.github.com>",
   "license": "MIT",
@@ -11,7 +11,7 @@
     "server"
   ],
   "scripts": {
-    "start": "node dist/main.js",
+    "start": "node ./server/bin/www",
     "build": "npm run build --prefix client",
     "prebuild": "rimraf ./server/public",
     "server:dev": "npm run dev --prefix server",
