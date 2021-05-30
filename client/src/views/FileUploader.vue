@@ -75,8 +75,7 @@ export default {
       useGoogle: false,
       accessToken: "",
       loginParams: {
-        client_id:
-          "806749174719-9lf5h2pm0c5jr9hj5dn9hbs5a80bgvtp.apps.googleusercontent.com",
+        client_id: process.env.VUE_APP_GOOGLE_APP_CLIENT,
       },
       file: null,
       isProcessingDone: false,
